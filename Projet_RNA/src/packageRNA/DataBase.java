@@ -34,6 +34,7 @@ public static void main(String[] args) {
 //	System.out.println(A);
 	double[][] matrixData = { {1d,2d,3d}, {2d,5d,3d}};
 	RealMatrix m = MatrixUtils.createRealMatrix(matrixData);
+	System.out.println(m);
 
 }
 }
