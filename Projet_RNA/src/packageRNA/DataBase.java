@@ -1,7 +1,8 @@
 package packageRNA;
 
 import java.util.ArrayList;
-import org.ejml.simple.SimpleMatrix;
+import org.apache.commons.math3.*;
+import org.apache.commons.math3.linear.*;
 
 
 /* Classe qui est connectée à un objet de la classe Net lors de son initialisation.
@@ -16,12 +17,12 @@ import org.ejml.simple.SimpleMatrix;
 * Net parent : Référence à l'objet Net connecté
 */
 public class DataBase {
-ArrayList<SimpleMatrix> weights;
+//ArrayList<SimpleMatrix> weights;
 Net parent;
 
 //Constructeur
 public DataBase(Net parent) {
-	this.weights = new ArrayList<SimpleMatrix>();
+//	this.weights = new ArrayList<SimpleMatrix>();
 	this.parent = parent;
 	 
 }
@@ -29,8 +30,11 @@ public DataBase(Net parent) {
 
 public static void main(String[] args) {
 	
-	SimpleMatrix A = new SimpleMatrix(10, 5);
-	System.out.println(A);
+//	SimpleMatrix A = new SimpleMatrix(10, 5);
+//	System.out.println(A);
+	double[][] matrixData = { {1d,2d,3d}, {2d,5d,3d}};
+	RealMatrix m = MatrixUtils.createRealMatrix(matrixData);
+
 }
 }
 

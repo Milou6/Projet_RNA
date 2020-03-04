@@ -2,7 +2,6 @@ package packageRNA;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.ejml.simple.SimpleMatrix;
 
 
 /* Classe de base du package.
@@ -114,9 +113,9 @@ public class Net {
 				new_weights[j][k] = Math.random();
 				}
 			}
-			SimpleMatrix weights_matrix = new SimpleMatrix(new_weights);
-			//On rajoute chaque matrice à l'objet DataBase
-			this.netDataBase.weights.add(weights_matrix);
+//			SimpleMatrix weights_matrix = new SimpleMatrix(new_weights);
+//			//On rajoute chaque matrice à l'objet DataBase
+//			this.netDataBase.weights.add(weights_matrix);
 		}
 		
 		
@@ -146,11 +145,11 @@ public class Net {
 		
 		
 		myNet.print();
-		myNet.train();	
+//		myNet.train();	
 //		System.out.println(myNet.layers.get(0).hasBiasNeuron);
 		
 		//TEMPORAIRE POUR TESTER
-		System.out.println(myNet.netDataBase.weights.get(0));
+//		System.out.println(myNet.netDataBase.weights.get(0));
 		//System.out.println(Arrays.deepToString(myNet.netDataBase.weights.get(1)));
 		
 
