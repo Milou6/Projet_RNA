@@ -111,12 +111,12 @@ public class DataBase {
 		
 		m = sigmoid(m);
 		System.out.println(m);
-		System.out.println("non");
 	}
 }
 
 
-// Salut j'aime les pattes
+// Salut j'aime les pattes, mais je préfère les patates
+
 
 
 
