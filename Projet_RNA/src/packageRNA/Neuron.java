@@ -1,7 +1,8 @@
 package packageRNA;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
+import org.apache.commons.math3.linear.*;
 
 /* Classe qui représente les neurones individuels du RNA.
  * S'étend aux sous-classes RegularNeuron et BiasNeuron.
@@ -11,33 +12,38 @@ import java.util.ArrayList;
  * 
  * String activation_function : Définit à la construction le type de fonction d'activation du neurone ("sigmoid", "tanh")
  * 
- * double activation : La valeur actuelle du neurone. Par défaut 0 pour les RegularNeuron, et 1 pour les BiasNeuron
+ * double activation : La valeur actuelle du neurone. Par défaut 0.0 pour les RegularNeuron, et 1.0 pour les BiasNeuron
  * 
  * ArrayList<Double> forwardWeights : Contient les poids partant du neurone actuel, vers tous les RegularNeuron de la Layer suivante
  */
 public class Neuron {
 	String activation_function;
 	double activation;
-	ArrayList<Double> forwardWeights;
+	RealMatrix forwardWeights;
 	
 	//Constructeur
 	public Neuron(String activation_function, double activation) {
 		// TODO Auto-generated constructor stub
 		this.activation_function = activation_function;
 		this.activation = activation;
-		this.forwardWeights = new ArrayList<Double>();
+		this.forwardWeights = MatrixUtils.createRealMatrix(1, 1);
 	}
 	
 	@Override
 	public String toString() {
-		return "Neuron [activation_function=" + activation_function + ", activation=" + activation + ", forwardWeights="
-				+ forwardWeights + "]";
+		if (this instanceof RegularNeuron) {
+			return " RegularNeuron [activation_function : " + activation_function + ", activation : " + activation + ", forwardWeights : " + Arrays.deepToString(forwardWeights.getData()) + " ]";
+		}
+		else {
+			return " BiasNeuron [activation_function : " + activation_function + ", activation : " + activation + ", forwardWeights : " + Arrays.deepToString(forwardWeights.getData()) + " ]";
+		}
 	}
 
 }
 
 
-/* TODO Sous-classe de Neuron
+
+/* Sous-classe de Neuron
  */
 class RegularNeuron extends Neuron {
 	
@@ -48,7 +54,7 @@ class RegularNeuron extends Neuron {
 }
 
 
-/* TODO Sous-classe de Layer
+/* Sous-classe de Layer
  */
 class BiasNeuron extends Neuron {
 	
