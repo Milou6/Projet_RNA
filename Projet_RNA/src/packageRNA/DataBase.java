@@ -23,14 +23,29 @@ import org.apache.commons.math3.linear.*;
 public class DataBase {
 	ArrayList<RealMatrix> weights;
 	ArrayList<RealMatrix> activations;
+	ArrayList<RealMatrix> weightedInputs;
+	ArrayList<RealMatrix> layerError;
 	Net parent;
 	
 	//Constructeur
 	public DataBase(Net parent) {
 		this.weights = new ArrayList<RealMatrix>();
 		this.activations = new ArrayList<RealMatrix>();
+		this.weightedInputs = new ArrayList<RealMatrix>();
+		this.layerError = new ArrayList<RealMatrix>();
 		this.parent = parent;
 		 
+	}
+	
+	public static RealMatrix hadamardProduct(RealMatrix m1, RealMatrix m2) {
+		RealMatrix result = new Array2DRowRealMatrix(new double[m1.getRowDimension()][m1.getColumnDimension()]);
+		
+		for (int i=0; i<m1.getRowDimension(); i++) {
+			for (int j=0; j<m1.getColumnDimension(); j++) {
+				result.setEntry(i, j, (m1.getEntry(i, j) * m2.getEntry(i, j)) );
+			}
+		}
+		return result;
 	}
 	
 	  public void print() {
@@ -49,6 +64,26 @@ public class DataBase {
 			  for (int i=0; i<activations.size(); i++) {
 				  double[][] matrix_data = activations.get(i).getData();
 				  System.out.println("\n Activations in Layer " + i + " :");
+				  for (double[] row : matrix_data) {
+					  System.out.println(Arrays.toString(row));
+				  }
+			  }
+		  }
+		  if (weightedInputs.size() > 0) {
+			  System.out.println("\n DATABASE WEIGHTED_INPUTS (Z) PRINT :");
+			  for (int i=0; i<weightedInputs.size(); i++) {
+				  double[][] matrix_data = weightedInputs.get(i).getData();
+				  System.out.println("\n Z in Layer " + i + " :");
+				  for (double[] row : matrix_data) {
+					  System.out.println(Arrays.toString(row));
+				  }
+			  }
+		  }
+		  if (layerError.size() > 0) {
+			  System.out.println("\n DATABASE LAYER ERROR PRINT :");
+			  for (int i=0; i<layerError.size(); i++) {
+				  double[][] matrix_data = layerError.get(i).getData();
+				  System.out.println("\n Error in Layer " + i + " :");
 				  for (double[] row : matrix_data) {
 					  System.out.println(Arrays.toString(row));
 				  }
@@ -98,10 +133,10 @@ public class DataBase {
 
 	// Classe main pour Test seulement.
 	public static void main(String[] args) {	
-		double[][] matrixData = { {7d,2d,3d}, {2d,5d,3d}};
+		double[][] matrixData = { {2d,2d,3d}, {2d,5d,3d}};
 		RealMatrix m = MatrixUtils.createRealMatrix(matrixData);
 		System.out.println(m);
-//		
+//	
 //		
 //		RealMatrix mat = MatrixUtils.createRealMatrix(1, 1);
 //		System.out.println(mat);
@@ -109,7 +144,9 @@ public class DataBase {
 //		mat = m.copy();
 //		System.out.println(mat);
 		
-		m = sigmoid(m);
+		m = hadamardProduct(m,m);
+		
+//		m = sigmoid(m);
 		System.out.println(m);
 	}
 }

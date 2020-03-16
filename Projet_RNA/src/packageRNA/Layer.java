@@ -1,4 +1,4 @@
-package packageRNA;
+	package packageRNA;
 
 import java.util.ArrayList;
 import org.apache.commons.math3.linear.*;
@@ -56,6 +56,8 @@ public class Layer {
 	}
 	
 
+	
+
 	/* Rajoute un objet Neuron (RegularNeuron ou BiasNeuron) à la Layer
 	 * ________________________________________________________________
 	 * Paramètres :
@@ -84,7 +86,7 @@ public class Layer {
 	 * Différent corps de méthode selon la sous-classe de Layer.
 	 * 
 	 */
-	public void forwardPropagate(int[][] x_test, int[] y_test) {
+	public void forwardPropagate(double[][] x_test) {
 	}
 	
 }
@@ -99,7 +101,8 @@ class InputLayer extends Layer {
 	}
 	
 	
-	public void forwardPropagate(int[][] x_test, int[] y_test) {
+	@Override
+	public void forwardPropagate(double[][] x_test) {
 		ArrayList<RealMatrix> activations = parent.netDataBase.activations;
 		
 		//A chaque itération d'entraînement, on met à jour dans la DataBase les activations d'Input
@@ -120,7 +123,8 @@ class HiddenLayer extends Layer {
 		super(parent, activation_function);
 	}
 	
-	public void forwardPropagate(int[][] x_test, int[] y_test) {	
+	@Override
+	public void forwardPropagate(double[][] x_test) {	
 		DataBase dataBase = parent.netDataBase;
 		int index = parent.layers.indexOf(this);
 		
@@ -128,6 +132,10 @@ class HiddenLayer extends Layer {
 		RealMatrix new_activation = dataBase.activations.get(index-1);
 		//On multiplie la matrice des poids par la matrice des activations
 		new_activation = dataBase.weights.get(index-1).multiply(new_activation);
+		
+		//Avant d'appliquer sigmoid, on sauve la valeur pour chaque neurone z = [w * x + b] dans weightedInputs
+		RealMatrix weighted_inputs = new Array2DRowRealMatrix(new_activation.getData());
+		dataBase.weightedInputs.set(index, weighted_inputs);
 		
 		//On applique la fonction d'activation de la Layer à la matrice obtenue
 		switch (activation_function) {
@@ -154,7 +162,8 @@ class OutputLayer extends Layer {
 		super(parent, activation_function);
 	}
 	
-	public void forwardPropagate(int[][] x_test, int[] y_test) {
+	@Override
+	public void forwardPropagate(double[][] x_test) {
 		DataBase dataBase = parent.netDataBase;
 		int index = parent.layers.indexOf(this);
 		
@@ -162,6 +171,10 @@ class OutputLayer extends Layer {
 		RealMatrix new_activation = dataBase.activations.get(index-1);
 		//On multiplie la matrice des poids par la matrice des activations
 		new_activation = dataBase.weights.get(index-1).multiply(new_activation);
+		
+		//Avant d'appliquer sigmoid, on sauve la valeur pour chaque neurone z = [w * x + b] dans weightedInputs
+		RealMatrix weighted_inputs = new Array2DRowRealMatrix(new_activation.getData());
+		dataBase.weightedInputs.set(index, weighted_inputs);
 		
 		//On applique la fonction d'activation de la Layer à la matrice obtenue
 		switch (activation_function) {
