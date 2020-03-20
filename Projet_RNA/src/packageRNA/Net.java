@@ -1,12 +1,21 @@
 package packageRNA;
 
+
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 import org.apache.commons.math3.linear.*;
 import org.tc33.jheatchart.HeatChart;
+import org.jfree.chart.*;
+import org.jfree.data.*;
+import org.jfree.data.xy.*;
 
 /* Classe de base du package.
  * 
@@ -24,11 +33,13 @@ import org.tc33.jheatchart.HeatChart;
 public class Net {
 	ArrayList<Layer> layers;
 	DataBase netDataBase;
+	ArrayList<Double> networkError;
 	
 	//Constructeur
 	public Net() {
 		this.layers = new ArrayList<Layer>();
 		this.netDataBase = new DataBase(this);
+		this.networkError = new ArrayList<Double>();
 	}
 	
 	private void print() {
@@ -163,6 +174,8 @@ public class Net {
 		initializeWeightedInputs();
 		initializeLayerError();
 		
+//		this.print();
+//		this.netDataBase.print();
 		
 		int print_int = 1;
 		//Boucle des Epochs
@@ -184,21 +197,30 @@ public class Net {
 				for (Layer l : this.layers) {
 					l.forwardPropagate(x_test);
 				}
+
+//				this.print();
 //				this.netDataBase.print();
 				
+//				System.out.println("trace");
 				//Calculer l'erreur moyenne (de tous les données du Batch!) entre output du RNA / output réel
 //				RealMatrix output_error = computeOutputError(y_test[f]);
 				computeOutputError(y_test[f]);
 //				batch_errors.add(f, output_error);
+				
+				this.networkError.add(netDataBase.layerError.get(netDataBase.layerError.size()-1).getEntry(0, 0));
+
 
 				backPropagateError();
 //				netDataBase.print();
+//				this.print();
+//				this.netDataBase.print();
+				
 				updateNetworkWeights(x_test, learning_rate);
 				
 				System.out.println(" Epoch " + e);
-				System.out.println(Arrays.toString(y_test[f]));
-				System.out.println(Arrays.deepToString(netDataBase.activations.get(netDataBase.activations.size()-1).getData()));
-				System.out.println(netDataBase.layerError.get(netDataBase.layerError.size()-1));
+//				System.out.println(Arrays.toString(y_test[f]));
+//				System.out.println(Arrays.deepToString(netDataBase.activations.get(netDataBase.activations.size()-1).getData()));
+//				System.out.println(netDataBase.layerError.get(netDataBase.layerError.size()-1));
 				//FORWARD-PROP ICI
 
 			}
@@ -219,9 +241,9 @@ public class Net {
 //			System.out.println(output_error);
 //			netDataBase.layerError.set(netDataBase.layerError.size()-1, output_error);
 			
-			backPropagateError();
-//			netDataBase.print();
-			updateNetworkWeights(x_test, learning_rate);
+//			backPropagateError();
+////		netDataBase.print();
+//			updateNetworkWeights(x_test, learning_rate);
 					
 		}//Epochs for-loop
 
@@ -259,7 +281,7 @@ public class Net {
 	
 	/* Méthode appelée à l'intérieur de Net.train()
 	 * Crée les matrices d'activations du RNA et les rajoute à l'objet DataBase.
-	 * Ces matrices sont remplies de 0.0, sauf pour les index des BiasNeuron (où l'on a des 1.0).
+	 * Ces matrices sont remplies de ,{0.0, sauf pour les index des BiasNeuron (où l'on a des 1.0).
 	 */
 	public void initializeActivations() {
 		for (int i=0; i<layers.size(); i++) {
@@ -357,13 +379,17 @@ public class Net {
 		
 
 		//left_member correspond à (a - y)
-		RealMatrix left_member = netDataBase.activations.get(index).subtract(real_output_vector);
+		RealMatrix left_member = netDataBase.activations.get(index).copy().subtract(real_output_vector);
 //		netDataBase.layerError.set(index, output_error);
 //		System.out.println(left_member);
 		
 		//output_error = (a -y) dot [sigmoid(z) * (1-sigmoid(z))]
 		RealMatrix output_error = hadamardProduct(left_member, right_member);
 		
+//		System.out.println("\n real_output_vector : " + real_output_vector);
+//		System.out.println("network output : " + netDataBase.activations.get(index));
+//		System.out.println("left_member : " + left_member);
+//		System.out.println("output_error : " + output_error);
 
 		//REMOVED FOR BATCH VERSION
 		netDataBase.layerError.set(index, output_error);
@@ -413,11 +439,10 @@ public class Net {
 			if (layers.get(i-1).hasBiasNeuron == true) {
 				a_transpose = a_transpose.getSubMatrix(0, a_transpose.getRowDimension()-2, 0, a_transpose.getColumnDimension()-1);
 			}
-//			System.out.println("UPDATE WEIGHT trace");
+//			System.out.println("\n UPDATE WEIGHT trace");
 //			System.out.println(a_transpose);
 			
 			to_subtract = to_subtract.multiply(a_transpose.transpose());
-//			System.out.println(to_subtract);
 			
 			to_subtract = to_subtract.scalarMultiply( (learning_rate/x_test.length) );
 //			System.out.println("to subtract : " + to_subtract);
@@ -468,6 +493,11 @@ public class Net {
 		final double [][] x_test = {{0,0}, {0,1}, {1,0}, {1,1}};
 		final double [][] y_test = {{0}, {1}, {1}, {0}};
 		
+		
+//		final double [][] y_test =  { {0},{0.198669331},{0.389418342},{0.564642473},{0.717356091},{0.841470985},{0.932039086},{0.98544973},{0.999573603},{0.973847631},{0.909297427},{0.808496404},{0.675463181},{0.515501372},{0.33498815},{0.141120008},{-0.058374143},{-0.255541102},{-0.442520443},{-0.611857891},{-0.756802495},{-0.871575772},{-0.951602074},{-0.993691004},{-0.996164609},{-0.958924275},{-0.883454656},{-0.772764488},{-0.631266638},{-0.464602179},{-0.279415498},{-0.083089403},{0.116549205},{0.311541364},{0.494113351},{0.656986599},{0.793667864},{0.898708096},{0.967919672},{0.998543345},{0.989358247},{0.940730557} };		
+//		final double [][] x_test = { {0},{0.2},{0.4},{0.6},{0.8},{1},{1.2},{1.4},{1.6},{1.8},{2},{2.2},{2.4},{2.6},{2.8},{3},{3.2},{3.4},{3.6},{3.8},{4},{4.2},{4.4},{4.6},{4.8},{5},{5.2},{5.4},{5.6},{5.8},{6},{6.2},{6.4},{6.6},{6.8},{7},{7.2},{7.4},{7.6},{7.8},{8},{8.2} };
+		
+
 //		final double [][] x_test = {{1,3}, {2,4}, {3,1}, {4,2}};
 //		final double [][] y_test = {{0,0}, {1,1}, {0,0}, {1,1}};
 		
@@ -500,21 +530,45 @@ public class Net {
 		myNet.addLayer("output", "sigmoid", 1, false);
 		
 
+
 		
-		
-		myNet.train(x_test, y_test, 5000, 0.6);	
+		myNet.train(x_test, y_test,  2000, 3);	
 //		generateMap(1);
 //		myNet.print();
 		
 		//TEMPORAIRE POUR TESTER		
 //		myNet.netDataBase.print();
 		
-//		double[] test = {0,0.4};
+//		double[] test = {0,,{0.4};
 //		System.out.println(myNet.predictSingle(test));
 /////
+
+		System.out.println(myNet.networkError);
 		
-//		myNet.generateMap();
+		XYSeriesCollection dataset = new XYSeriesCollection();
+		XYSeries series1 = new XYSeries("Object 1", false);
 		
+		for (int i=0; i<myNet.networkError.size()-1; i++) {
+			series1.add(i, myNet.networkError.get(i));
+		}
+		dataset.addSeries(series1);
+		
+		
+
+		
+		JFreeChart chart = ChartFactory.createXYLineChart("Network_Error", "error", "Epoch", dataset);
+		chart.createBufferedImage(600, 600);
+		
+		JPanel jPanel1 = new JPanel();
+		jPanel1.setLayout(new java.awt.BorderLayout());
+		ChartPanel CP = new ChartPanel(chart);
+		jPanel1.add(CP,BorderLayout.CENTER);
+		jPanel1.validate();
+		
+		 JFrame frame = new JFrame();
+		 frame.add(jPanel1); 
+		 frame.setSize(300, 300); 
+	     frame.show(); 
 
 	}
 }
