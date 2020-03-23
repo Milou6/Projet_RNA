@@ -12,7 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.apache.commons.math3.linear.*;
-import org.tc33.jheatchart.HeatChart;
+//import org.tc33.jheatchart.HeatChart;
 import org.jfree.chart.*;
 import org.jfree.data.*;
 import org.jfree.data.xy.*;
@@ -41,8 +41,8 @@ public class Net {
 		this.netDataBase = new DataBase(this);
 		this.networkError = new ArrayList<Double>();
 	}
-	
-	private void print() {
+	/*
+	public void print() {
 		System.out.println("\n NETWORK PRINT ( " + layers.size() + " layers )");
 		
 		for (Layer i : layers) {
@@ -51,6 +51,21 @@ public class Net {
 				System.out.println(n);
 			}
 		}
+	}
+	*/
+	public String print() {
+		String print;
+		
+		print= "\n \n NETWORK PRINT ( " + layers.size() + " layers )";
+		
+		for (Layer i : layers) {
+			print += "\n Layer " + layers.indexOf(i) + " :";
+			for (Neuron n : i.neurons) {
+				print+= "\n "+ n;
+			}
+		}
+		
+		return print;
 	}
 	
 	
@@ -218,6 +233,7 @@ public class Net {
 				updateNetworkWeights(x_test, learning_rate);
 				
 				System.out.println(" Epoch " + e);
+				
 //				System.out.println(Arrays.toString(y_test[f]));
 //				System.out.println(Arrays.deepToString(netDataBase.activations.get(netDataBase.activations.size()-1).getData()));
 //				System.out.println(netDataBase.layerError.get(netDataBase.layerError.size()-1));
